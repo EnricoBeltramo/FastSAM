@@ -90,6 +90,7 @@ def main(args):
     bboxes = None
     points = None
     point_label = None
+    # masks: prompt_process.results[0].masks.data (numbers of mask, h, w)
     prompt_process = FastSAMPrompt(input, everything_results, device=args.device)
     if args.box_prompt[0][2] != 0 and args.box_prompt[0][3] != 0:
             ann = prompt_process.box_prompt(bboxes=args.box_prompt)

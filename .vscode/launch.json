@@ -1,0 +1,26 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "inference.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "--model_path",
+        "./weights/FastSAM-x.pt",
+        "--img_path",
+        "images/11146366_10203799685502790_5459137856496960266_o.jpg",
+        "--better_quality",
+        "true",
+        "--withContours",
+        "true"
+      ]
+    }
+  ]
+}
