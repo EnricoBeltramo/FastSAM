@@ -291,10 +291,12 @@ class FastSAMPrompt:
         msak_sum = annotation.shape[0]
         height = annotation.shape[1]
         weight = annotation.shape[2]
+        # order masks by area: minor area is the first index
         areas = torch.sum(annotation, dim=(1, 2))
         sorted_indices = torch.argsort(areas, descending=False)
         annotation = annotation[sorted_indices]
         # Find the index of the first non-zero value at each position.
+        # in index there is a map: for each pixel, the index of mask where the pixel is
         index = (annotation != 0).to(torch.long).argmax(dim=0)
         if random_color:
             color = torch.rand((msak_sum, 1, 1, 3)).to(annotation.device)

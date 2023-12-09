@@ -35,8 +35,12 @@ class FastSAMPredictor(DetectionPredictor):
             full_box[0][6:] = p[0][critical_iou_index][:,6:]
             p[0][critical_iou_index] = full_box
         
+        # tihs is the protoNet, shape: [1,32,256,256], [batch, num_layers, h, w]
         proto = preds[1][-1] if len(preds[1]) == 3 else preds[1]  # second output is len 3 if pt, but only 1 if exported
+
+        # loop by each image 
         for i, pred in enumerate(p):
+            # take the image original
             orig_img = orig_imgs[i] if isinstance(orig_imgs, list) else orig_imgs
             path = self.batch[0]
             img_path = path[i] if isinstance(path, list) else path
@@ -46,6 +50,8 @@ class FastSAMPredictor(DetectionPredictor):
             if self.args.retina_masks:
                 if not isinstance(orig_imgs, torch.Tensor):
                     pred[:, :4] = ops.scale_boxes(img.shape[2:], pred[:, :4], orig_img.shape)
+                # pars: protnet, mask, boxes, shape image
+                # from doc: It takes the output of the mask head, and crops it after upsampling to the bounding boxes.
                 masks = ops.process_mask_native(proto[i], pred[:, 6:], pred[:, :4], orig_img.shape[:2])  # HWC
             else:
                 masks = ops.process_mask(proto[i], pred[:, 6:], pred[:, :4], img.shape[2:], upsample=True)  # HWC

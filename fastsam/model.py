@@ -21,8 +21,19 @@ from .predict import FastSAMPredictor
 
 class FastSAM(YOLO):
 
+    def __init__(self, model = '', **kwargs):
+        super().__init__(model)
+        overrides = self.overrides.copy()
+        overrides['conf'] = 0.25
+        overrides.update(kwargs)  # prefer kwargs
+        overrides['mode'] = kwargs.get('mode', 'predict')
+        assert overrides['mode'] in ['track', 'predict']
+        overrides['save'] = kwargs.get('save', False)  # do not save by default if called in Python
+        self.predictor = FastSAMPredictor(overrides=overrides)
+        self.predictor.setup_model(model=self.model, verbose=False)
+
     @smart_inference_mode()
-    def predict(self, source=None, stream=False, **kwargs):
+    def predict(self, source=None, stream=False):
         """
         Perform prediction using the YOLO model.
 
@@ -39,14 +50,6 @@ class FastSAM(YOLO):
         if source is None:
             source = ROOT / 'assets' if is_git_dir() else 'https://ultralytics.com/images/bus.jpg'
             LOGGER.warning(f"WARNING ⚠️ 'source' is missing. Using 'source={source}'.")
-        overrides = self.overrides.copy()
-        overrides['conf'] = 0.25
-        overrides.update(kwargs)  # prefer kwargs
-        overrides['mode'] = kwargs.get('mode', 'predict')
-        assert overrides['mode'] in ['track', 'predict']
-        overrides['save'] = kwargs.get('save', False)  # do not save by default if called in Python
-        self.predictor = FastSAMPredictor(overrides=overrides)
-        self.predictor.setup_model(model=self.model, verbose=False)
         try:
             return self.predictor(source, stream=stream)
         except Exception as e:
